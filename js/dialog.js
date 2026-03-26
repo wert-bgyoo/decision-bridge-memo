@@ -7,7 +7,7 @@
 
 (async () => {
   // ── Tableau 팝업 초기화 (payload = 출원번호) ──
-  const payload = await tableau.extensions.ui.initializeDialogAsync();
+  const payload = await tableau.extensions.initializeDialogAsync();
 
   // settings에서 선택된 특허 상세 정보 가져오기
   const patentData = JSON.parse(
