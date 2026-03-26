@@ -13,7 +13,7 @@ let testPassed = false;  // 연결 테스트 통과 여부
 (async () => {
   try {
     // ── Tableau 팝업 초기화 ──
-    await tableau.extensions.ui.initializeDialogAsync();
+    await tableau.extensions.initializeDialogAsync();
 
     // ── 현재 설정 표시 ──
     displayCurrentStatus();
