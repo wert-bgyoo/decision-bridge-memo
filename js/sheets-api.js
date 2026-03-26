@@ -27,22 +27,40 @@ function getSpreadsheetId() {
 }
 
 /**
+ * Google Identity Services 라이브러리 로드 대기
+ * async defer로 로드되므로 준비될 때까지 기다려야 함
+ */
+function waitForGoogleAuth(maxWait) {
+  maxWait = maxWait || 5000;
+  return new Promise(function(resolve, reject) {
+    if (typeof google !== 'undefined' && google.accounts) {
+      resolve();
+      return;
+    }
+    var elapsed = 0;
+    var interval = setInterval(function() {
+      elapsed += 100;
+      if (typeof google !== 'undefined' && google.accounts) {
+        clearInterval(interval);
+        resolve();
+      } else if (elapsed >= maxWait) {
+        clearInterval(interval);
+        reject(new Error('Google 로그인 라이브러리를 불러오지 못했습니다.'));
+      }
+    }, 100);
+  });
+}
+
+/**
  * Google Identity Services 토큰 클라이언트 초기화
  * index.html, dialog.html, memo-list.html 로드 시 호출
  */
-function initGoogleAuth() {
-  return new Promise((resolve) => {
-    _tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CONFIG.OAUTH_CLIENT_ID,
-      scope: CONFIG.OAUTH_SCOPES,
-      callback: (response) => {
-        if (response.access_token) {
-          _accessToken = response.access_token;
-          resolve(response.access_token);
-        }
-      }
-    });
-    resolve(null);
+async function initGoogleAuth() {
+  await waitForGoogleAuth(5000);
+  _tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CONFIG.OAUTH_CLIENT_ID,
+    scope: CONFIG.OAUTH_SCOPES,
+    callback: function() {} // requestAccessToken 호출 시 덮어씀
   });
 }
 
