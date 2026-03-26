@@ -8,7 +8,7 @@ let hasChanges = false;
 
 (async () => {
   // ── Tableau 팝업 초기화 ──
-  await tableau.extensions.ui.initializeDialogAsync();
+  await tableau.extensions.initializeDialogAsync();
 
   // ── Google Auth 초기화 ──
   await initGoogleAuth();
