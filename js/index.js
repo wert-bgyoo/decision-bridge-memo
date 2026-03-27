@@ -49,8 +49,9 @@ async function initMainUI() {
   const dashboard = tableau.extensions.dashboardContent.dashboard;
   const clientName = getClientName();
 
-  // ── 메모 목록 버튼 활성화 ──
+  // ── 메모 목록, 갱신 버튼 활성화 ──
   document.getElementById('btnMemoList').disabled = false;
+  document.getElementById('btnRefresh').disabled = false;
 
   // ── 고객사 이름 + 초기 안내 표시 ──
   document.getElementById('selectedInfo').innerHTML =
@@ -83,6 +84,9 @@ async function initMainUI() {
 
   // ── 메모 목록 버튼 ──
   document.getElementById('btnMemoList').addEventListener('click', openMemoListDialog);
+
+  // ── 메모 갱신 버튼 ──
+  document.getElementById('btnRefresh').addEventListener('click', handleRefresh);
 }
 
 /**
@@ -222,7 +226,7 @@ async function openMemoDialog() {
  */
 async function openMemoListDialog() {
   try {
-    await tableau.extensions.ui.displayDialogAsync(
+    const result = await tableau.extensions.ui.displayDialogAsync(
       './memo-list.html',
       '',
       {
@@ -231,15 +235,36 @@ async function openMemoListDialog() {
         title: '메모 목록 관리'
       }
     );
+
+    // 목록에서 수정/삭제가 발생한 경우 갱신
+    if (result === 'updated') {
+      await refreshMemoIndicators();
+      updateSelectionDisplay();
+    }
   } catch (e) {
     if (e.errorCode !== tableau.ErrorCodes.DialogClosedByUser) {
       console.error('목록 팝업 오류:', e);
     }
   }
+}
 
-  // 목록 팝업을 닫으면 항상 메모 유무 갱신 (닫기/수정/삭제 모두)
-  await refreshMemoIndicators();
-  updateSelectionDisplay();
+/**
+ * 메모 갱신 버튼 핸들러
+ */
+async function handleRefresh() {
+  const btn = document.getElementById('btnRefresh');
+  btn.disabled = true;
+  btn.textContent = '갱신 중...';
+
+  try {
+    await refreshMemoIndicators();
+    updateSelectionDisplay();
+    btn.textContent = '갱신 완료';
+    setTimeout(function() { btn.textContent = '메모 갱신'; btn.disabled = false; }, 1500);
+  } catch (e) {
+    btn.textContent = '갱신 실패';
+    setTimeout(function() { btn.textContent = '메모 갱신'; btn.disabled = false; }, 2000);
+  }
 }
 
 /**
