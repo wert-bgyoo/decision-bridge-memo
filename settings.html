@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>고객사 스프레드시트 설정</title>
+
+  <!-- Tableau Extensions API -->
+  <script src="https://cdn.jsdelivr.net/npm/tableau-extensions-api@1.14.1/vendor/tableau-extensions/tableau.extensions.1.latest.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { padding: 28px; background: #fff; }
+
+    h2 {
+      font-size: 16px;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* 현재 연결 상태 */
+    .current-status {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .current-status .label {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .current-status .value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .current-status .value.connected { color: #16a34a; }
+    .current-status .value.not-connected { color: #dc2626; }
+
+    /* 안내 박스 */
+    .help-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #92400e;
+      line-height: 1.6;
+    }
+    .help-box code {
+      background: #fef3c7;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: 'Consolas', monospace;
+      font-size: 11px;
+    }
+
+    /* 입력 영역 */
+    .input-group {
+      margin-bottom: 14px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 5px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+    }
+
+    /* 연결 테스트 결과 */
+    .test-result {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .test-result.success {
+      display: block;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+    .test-result.error {
+      display: block;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    .test-result.loading {
+      display: block;
+      background: #f0f4ff;
+      border: 1px solid #c7d2fe;
+      color: #3730a3;
+    }
+
+    /* 버튼 행 */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .btn-row .left { display: flex; gap: 8px; }
+    .btn-row .right { display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+  <h2>고객사 스프레드시트 연결</h2>
+  <p class="subtitle">
+    이 대시보드에서 사용할 고객사의 Google Sheets를 연결합니다.<br>
+    고객사마다 별도의 스프레드시트를 만들어 연결하세요.
+  </p>
+
+  <!-- 현재 상태 -->
+  <div class="current-status">
+    <div class="label">현재 연결 상태</div>
+    <div class="value" id="currentStatus">확인 중...</div>
+  </div>
+
+  <!-- 안내 -->
+  <div class="help-box">
+    Google Sheets 주소에서 Spreadsheet ID를 복사하세요:<br>
+    <code>https://docs.google.com/spreadsheets/d/<strong>이 부분이 ID</strong>/edit</code><br><br>
+    또는 Google Sheets 주소 전체를 붙여넣으면 자동으로 ID를 추출합니다.
+  </div>
+
+  <!-- 입력 -->
+  <div class="input-group">
+    <label for="clientName">고객사 이름</label>
+    <input type="text" id="clientName" placeholder="예: ○○대학교, △△연구소">
+  </div>
+
+  <div class="input-group">
+    <label for="spreadsheetInput">Spreadsheet ID 또는 Google Sheets 주소</label>
+    <input type="text" id="spreadsheetInput"
+      placeholder="예: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ 또는 전체 URL 붙여넣기">
+  </div>
+
+  <!-- 연결 테스트 결과 -->
+  <div class="test-result" id="testResult"></div>
+
+  <!-- 버튼 -->
+  <div class="btn-row">
+    <div class="left">
+      <button class="btn btn-cancel" id="btnTest">연결 테스트</button>
+    </div>
+    <div class="right">
+      <button class="btn btn-cancel" id="btnCancel">취소</button>
+      <button class="btn btn-primary" id="btnSave" disabled>저장</button>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/sheets-api.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
