@@ -57,10 +57,24 @@ function waitForGoogleAuth(maxWait) {
  */
 async function initGoogleAuth() {
   await waitForGoogleAuth(5000);
-  _tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CONFIG.OAUTH_CLIENT_ID,
-    scope: CONFIG.OAUTH_SCOPES,
-    callback: function() {} // requestAccessToken 호출 시 덮어씀
+  return new Promise((resolve, reject) => {
+    _tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CONFIG.OAUTH_CLIENT_ID,
+      scope: CONFIG.OAUTH_SCOPES,
+      callback: (response) => {
+        if (response.error) {
+          reject(new Error(response.error));
+          return;
+        }
+        _accessToken = response.access_token;
+        resolve(response.access_token);
+      },
+      error_callback: (err) => {
+        reject(new Error('Google 로그인 실패: ' + (err.message || err.type || '팝업이 차단되었을 수 있습니다')));
+      }
+    });
+    // 토큰 클라이언트만 생성하고 바로 resolve (로그인은 나중에)
+    resolve(null);
   });
 }
 
@@ -73,13 +87,16 @@ async function getAccessToken() {
   return new Promise((resolve, reject) => {
     _tokenClient.callback = (response) => {
       if (response.error) {
-        reject(new Error(response.error));
+        reject(new Error('인증 오류: ' + response.error));
         return;
       }
       _accessToken = response.access_token;
       resolve(_accessToken);
     };
-    _tokenClient.requestAccessToken();
+    _tokenClient.error_callback = (err) => {
+      reject(new Error('Google 로그인 실패: ' + (err.message || err.type || '팝업이 차단되었을 수 있습니다')));
+    };
+    _tokenClient.requestAccessToken({ prompt: 'consent' });
   });
 }
 
