@@ -104,6 +104,7 @@ async function runConnectionTest() {
   const resultEl = document.getElementById('testResult');
 
   if (!extractedId) {
+    resultEl.style.display = 'block';
     resultEl.className = 'test-result error';
     resultEl.innerHTML =
       'Spreadsheet ID를 인식할 수 없습니다.<br>' +
@@ -112,6 +113,7 @@ async function runConnectionTest() {
   }
 
   // 로딩 상태
+  resultEl.style.display = 'block';
   resultEl.className = 'test-result loading';
   resultEl.textContent = '연결 테스트 중...';
   document.getElementById('btnTest').disabled = true;
@@ -119,6 +121,7 @@ async function runConnectionTest() {
   try {
     const result = await testConnection(extractedId);
 
+    resultEl.style.display = 'block';
     resultEl.className = 'test-result success';
     resultEl.innerHTML =
       `연결 성공!<br>` +
@@ -134,6 +137,7 @@ async function runConnectionTest() {
       nameInput.value = result.sheetTitle.replace('DECISION_BRIDGE_MEMO_', '');
     }
   } catch (e) {
+    resultEl.style.display = 'block';
     resultEl.className = 'test-result error';
     resultEl.innerHTML = e.message.replace(/\n/g, '<br>');
     testPassed = false;
