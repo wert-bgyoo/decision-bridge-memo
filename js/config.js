@@ -17,7 +17,7 @@ const CONFIG = {
   WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbwLBvwR_j1E5e3Vym12uFRBkB_OKDxPSqjcsIhv6nokGl2CnSjyA_8fL28UsDNjIyMU/exec',
 
   // ── Tableau 워크시트 이름 (대시보드에서 사용하는 이름과 일치시킬 것) ──
-  PATENT_WORKSHEET_NAME: '보유특허목록',
+  PATENT_WORKSHEET_NAME: '기술이전특허 목록',
 
   // ── 메모 컬럼 순서 (Google Sheets 컬럼 순서와 일치) ──
   COLUMNS: [
