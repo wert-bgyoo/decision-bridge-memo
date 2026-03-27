@@ -10,6 +10,7 @@
  */
 
 let selectedPatent = null;
+let selectedPatents = [];  // 다중 선택 지원
 let patentsWithMemo = new Set();
 
 (async () => {
@@ -96,7 +97,7 @@ async function handleMarkSelection(event) {
   }
 
   const columns = marks.data[0].columns;
-  const row = marks.data[0].data[0];
+  const rows = marks.data[0].data;
 
   // 컬럼 인덱스 탐색
   const appNumIdx = columns.findIndex(c => c.fieldName === '출원번호');
@@ -108,25 +109,41 @@ async function handleMarkSelection(event) {
     return;
   }
 
-  selectedPatent = {
-    출원번호: row[appNumIdx].formattedValue,
-    발명의_명칭: titleIdx >= 0 ? row[titleIdx].formattedValue : '',
-    grade: gradeIdx >= 0 ? row[gradeIdx].formattedValue : ''
-  };
+  // 모든 선택된 행을 배열로 저장
+  selectedPatents = rows.map(function(row) {
+    return {
+      출원번호: row[appNumIdx].formattedValue,
+      발명의_명칭: titleIdx >= 0 ? row[titleIdx].formattedValue : '',
+      grade: gradeIdx >= 0 ? row[gradeIdx].formattedValue : ''
+    };
+  });
+
+  // 첫 번째 선택 항목을 대표로 저장 (호환성)
+  selectedPatent = selectedPatents[0];
 
   // UI 업데이트
   document.getElementById('btnAddMemo').disabled = false;
 
   const clientName = getClientName();
   const infoEl = document.getElementById('selectedInfo');
-  const hasMemo = patentsWithMemo.has(selectedPatent.출원번호);
-  infoEl.innerHTML =
-    `<span class="client-badge">${clientName}</span> ` +
-    `<span class="num">${selectedPatent.출원번호}</span> ${selectedPatent.발명의_명칭}` +
-    (hasMemo ? '<span class="memo-badge">메모</span>' : '');
+
+  if (selectedPatents.length === 1) {
+    // 단일 선택
+    const hasMemo = patentsWithMemo.has(selectedPatent.출원번호);
+    infoEl.innerHTML =
+      `<span class="client-badge">${clientName}</span> ` +
+      `<span class="num">${selectedPatent.출원번호}</span> ${selectedPatent.발명의_명칭}` +
+      (hasMemo ? '<span class="memo-badge">메모</span>' : '');
+  } else {
+    // 다중 선택
+    infoEl.innerHTML =
+      `<span class="client-badge">${clientName}</span> ` +
+      `<span class="num">${selectedPatents.length}건 선택</span> ` +
+      `<span class="status-msg">${selectedPatent.출원번호} 외 ${selectedPatents.length - 1}건</span>`;
+  }
 
   // settings에 선택 정보 저장 (팝업에서 참조)
-  tableau.extensions.settings.set(CONFIG.SETTINGS_KEYS.SELECTED_PATENT, JSON.stringify(selectedPatent));
+  tableau.extensions.settings.set(CONFIG.SETTINGS_KEYS.SELECTED_PATENT, JSON.stringify(selectedPatents));
   await tableau.extensions.settings.saveAsync();
 }
 
@@ -135,6 +152,7 @@ async function handleMarkSelection(event) {
  */
 function clearSelection() {
   selectedPatent = null;
+  selectedPatents = [];
   document.getElementById('btnAddMemo').disabled = true;
   const clientName = getClientName();
   document.getElementById('selectedInfo').innerHTML =
