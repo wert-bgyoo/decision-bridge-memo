@@ -32,8 +32,6 @@
   populateSelect('status', CONFIG.STATUSES);
   populateAuthorSelect();
 
-  // ── Google Auth 초기화 ──
-  await initGoogleAuth();
 
   // ── 기존 메모 로드 ──
   await loadExistingMemos(출원번호);
