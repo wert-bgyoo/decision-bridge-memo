@@ -47,7 +47,7 @@ function showNotConfigured() {
  */
 async function initMainUI() {
   const dashboard = tableau.extensions.dashboardContent.dashboard;
-  const clientName = getClientName();
+
 
   // ── 메모 목록, 갱신 버튼 활성화 ──
   document.getElementById('btnMemoList').disabled = false;
@@ -55,7 +55,6 @@ async function initMainUI() {
 
   // ── 고객사 이름 + 초기 안내 표시 ──
   document.getElementById('selectedInfo').innerHTML =
-    `<span class="client-badge">${clientName}</span> ` +
     `<span class="status-msg">특허를 선택하면 메모를 추가할 수 있습니다</span>`;
 
   // ── 메모 유무 정보 로드 ──
@@ -128,7 +127,7 @@ async function handleMarkSelection(event) {
   // UI 업데이트
   document.getElementById('btnAddMemo').disabled = false;
 
-  const clientName = getClientName();
+
   const infoEl = document.getElementById('selectedInfo');
 
   if (selectedPatents.length === 1) {
@@ -159,9 +158,8 @@ function clearSelection() {
   selectedPatent = null;
   selectedPatents = [];
   document.getElementById('btnAddMemo').disabled = true;
-  const clientName = getClientName();
+
   document.getElementById('selectedInfo').innerHTML =
-    `<span class="client-badge">${clientName}</span> ` +
     `<span class="status-msg">특허를 선택하면 메모를 추가할 수 있습니다</span>`;
 }
 
@@ -273,7 +271,7 @@ async function handleRefresh() {
 function updateSelectionDisplay() {
   if (!selectedPatent) return;
 
-  const clientName = getClientName();
+
   const infoEl = document.getElementById('selectedInfo');
 
   if (selectedPatents.length === 1) {
