@@ -18,13 +18,6 @@ let testPassed = false;  // 연결 테스트 통과 여부
     // ── 현재 설정 표시 ──
     displayCurrentStatus();
 
-    // ── Google Auth 초기화 ──
-    try {
-      await initGoogleAuth();
-    } catch (e) {
-      console.warn('Google Auth 초기화 실패 (연결 테스트 시 재시도):', e);
-    }
-
     // ── 기존 값 채우기 ──
     const savedName = tableau.extensions.settings.get(CONFIG.SETTINGS_KEYS.CLIENT_NAME) || '';
     const savedId = tableau.extensions.settings.get(CONFIG.SETTINGS_KEYS.SPREADSHEET_ID) || '';
@@ -124,12 +117,6 @@ async function runConnectionTest() {
   document.getElementById('btnTest').disabled = true;
 
   try {
-    // Google Auth가 아직 안 되었으면 재시도
-    if (!_tokenClient) {
-      resultEl.textContent = 'Google 로그인 준비 중...';
-      await initGoogleAuth();
-    }
-
     const result = await testConnection(extractedId);
 
     resultEl.className = 'test-result success';
