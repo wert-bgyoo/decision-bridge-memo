@@ -11,11 +11,10 @@ const CONFIG = {
   // ── Google Sheets 시트명 (모든 고객사 공통) ──
   SHEET_NAME: 'patent_memo',
 
-  // ── Google OAuth 2.0 Client ID ──
-  // Google Cloud Console에서 생성한 값을 입력하세요.
-  // 이 값 하나로 모든 고객사 스프레드시트에 접근합니다.
-  OAUTH_CLIENT_ID: '601313074668-jbbk3avnitvvtcphql9orllde9ceo1nn.apps.googleusercontent.com',
-  OAUTH_SCOPES: 'https://www.googleapis.com/auth/spreadsheets',
+  // ── Google Apps Script 웹앱 URL ──
+  // Apps Script 웹앱 배포 후 받은 URL을 입력하세요.
+  // 이 URL 하나로 모든 고객사 스프레드시트에 접근합니다.
+  WEBAPP_URL: 'YOUR_WEBAPP_URL',
 
   // ── Tableau 워크시트 이름 (대시보드에서 사용하는 이름과 일치시킬 것) ──
   PATENT_WORKSHEET_NAME: '보유특허목록',
