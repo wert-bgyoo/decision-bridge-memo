@@ -10,8 +10,6 @@ let hasChanges = false;
   // ── Tableau 팝업 초기화 ──
   await tableau.extensions.initializeDialogAsync();
 
-  // ── Google Auth 초기화 ──
-  await initGoogleAuth();
 
   // ── 필터 옵션 세팅 ──
   setupFilterOptions();
