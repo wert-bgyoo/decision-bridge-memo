@@ -16,13 +16,6 @@ let patentsWithMemo = new Set();
   // ── Tableau Extension 초기화 ──
   await tableau.extensions.initializeAsync();
 
-  // ── Google Auth 초기화 ──
-  try {
-    await initGoogleAuth();
-  } catch (e) {
-    console.warn('Google Auth 초기화 대기 중:', e);
-  }
-
   // ── 설정 버튼은 항상 활성화 ──
   document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
 
