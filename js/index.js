@@ -67,7 +67,6 @@ async function initMainUI() {
 
   if (!patentSheet) {
     document.getElementById('selectedInfo').innerHTML =
-      `<span class="client-badge">${clientName}</span> ` +
       `<span class="status-msg">워크시트 "${CONFIG.PATENT_WORKSHEET_NAME}"을 찾을 수 없습니다</span>`;
     return;
   }
@@ -134,14 +133,12 @@ async function handleMarkSelection(event) {
     // 단일 선택
     const hasMemo = patentsWithMemo.has(selectedPatent.출원번호);
     infoEl.innerHTML =
-      `<span class="client-badge">${clientName}</span> ` +
       `<span class="num">${selectedPatent.출원번호}</span> ` +
       (hasMemo ? '<span class="memo-badge">메모</span> ' : '') +
       selectedPatent.발명의_명칭;
   } else {
     // 다중 선택
     infoEl.innerHTML =
-      `<span class="client-badge">${clientName}</span> ` +
       `<span class="num">${selectedPatents.length}건 선택</span> ` +
       `<span class="status-msg">${selectedPatent.출원번호} 외 ${selectedPatents.length - 1}건</span>`;
   }
@@ -277,13 +274,11 @@ function updateSelectionDisplay() {
   if (selectedPatents.length === 1) {
     const hasMemo = patentsWithMemo.has(selectedPatent.출원번호);
     infoEl.innerHTML =
-      `<span class="client-badge">${clientName}</span> ` +
       `<span class="num">${selectedPatent.출원번호}</span> ` +
       (hasMemo ? '<span class="memo-badge">메모</span> ' : '') +
       selectedPatent.발명의_명칭;
   } else if (selectedPatents.length > 1) {
     infoEl.innerHTML =
-      `<span class="client-badge">${clientName}</span> ` +
       `<span class="num">${selectedPatents.length}건 선택</span> ` +
       `<span class="status-msg">${selectedPatent.출원번호} 외 ${selectedPatents.length - 1}건</span>`;
   }
