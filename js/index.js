@@ -132,8 +132,9 @@ async function handleMarkSelection(event) {
     const hasMemo = patentsWithMemo.has(selectedPatent.출원번호);
     infoEl.innerHTML =
       `<span class="client-badge">${clientName}</span> ` +
-      `<span class="num">${selectedPatent.출원번호}</span> ${selectedPatent.발명의_명칭}` +
-      (hasMemo ? '<span class="memo-badge">메모</span>' : '');
+      `<span class="num">${selectedPatent.출원번호}</span> ` +
+      (hasMemo ? '<span class="memo-badge">메모</span> ' : '') +
+      selectedPatent.발명의_명칭;
   } else {
     // 다중 선택
     infoEl.innerHTML =
@@ -207,14 +208,7 @@ async function openMemoDialog() {
 
     if (result === 'saved') {
       await refreshMemoIndicators();
-      if (selectedPatent) {
-        const clientName = getClientName();
-        const infoEl = document.getElementById('selectedInfo');
-        infoEl.innerHTML =
-          `<span class="client-badge">${clientName}</span> ` +
-          `<span class="num">${selectedPatent.출원번호}</span> ${selectedPatent.발명의_명칭}` +
-          '<span class="memo-badge">메모</span>';
-      }
+      updateSelectionDisplay();
     }
   } catch (e) {
     if (e.errorCode !== tableau.ErrorCodes.DialogClosedByUser) {
@@ -228,7 +222,7 @@ async function openMemoDialog() {
  */
 async function openMemoListDialog() {
   try {
-    const result = await tableau.extensions.ui.displayDialogAsync(
+    await tableau.extensions.ui.displayDialogAsync(
       './memo-list.html',
       '',
       {
@@ -237,14 +231,38 @@ async function openMemoListDialog() {
         title: '메모 목록 관리'
       }
     );
-
-    if (result === 'updated') {
-      await refreshMemoIndicators();
-    }
   } catch (e) {
     if (e.errorCode !== tableau.ErrorCodes.DialogClosedByUser) {
       console.error('목록 팝업 오류:', e);
     }
+  }
+
+  // 목록 팝업을 닫으면 항상 메모 유무 갱신 (닫기/수정/삭제 모두)
+  await refreshMemoIndicators();
+  updateSelectionDisplay();
+}
+
+/**
+ * 현재 선택된 특허의 메모 표시를 갱신
+ */
+function updateSelectionDisplay() {
+  if (!selectedPatent) return;
+
+  const clientName = getClientName();
+  const infoEl = document.getElementById('selectedInfo');
+
+  if (selectedPatents.length === 1) {
+    const hasMemo = patentsWithMemo.has(selectedPatent.출원번호);
+    infoEl.innerHTML =
+      `<span class="client-badge">${clientName}</span> ` +
+      `<span class="num">${selectedPatent.출원번호}</span> ` +
+      (hasMemo ? '<span class="memo-badge">메모</span> ' : '') +
+      selectedPatent.발명의_명칭;
+  } else if (selectedPatents.length > 1) {
+    infoEl.innerHTML =
+      `<span class="client-badge">${clientName}</span> ` +
+      `<span class="num">${selectedPatents.length}건 선택</span> ` +
+      `<span class="status-msg">${selectedPatent.출원번호} 외 ${selectedPatents.length - 1}건</span>`;
   }
 }
 
