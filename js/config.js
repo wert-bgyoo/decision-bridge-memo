@@ -5,7 +5,7 @@
  *   고객사마다 다르므로 Tableau 대시보드별로 [설정] 팝업에서 입력합니다.
  *   입력된 값은 Tableau Extension settings에 저장되어 대시보드에 귀속됩니다.
  *
- * 배포 전 OAUTH_CLIENT_ID만 실제 값으로 수정하세요.
+ * 배포 전 WEBAPP_URL만 실제 값으로 수정하세요.
  */
 const CONFIG = {
   // ── Google Sheets 시트명 (모든 고객사 공통) ──
