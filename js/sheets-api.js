@@ -111,24 +111,24 @@ async function addMemo(memoData) {
 /**
  * 메모 수정
  */
-async function updateMemo(rowIndex, memoData) {
+async function updateMemo(memoId, memoData) {
   const spreadsheetId = getSpreadsheetId();
   return callWebapp({
     action: 'update',
     spreadsheetId: spreadsheetId,
-    data: { rowIndex: rowIndex, memo: memoData }
+    data: { memoId: memoId, memo: memoData }
   });
 }
 
 /**
  * 메모 삭제
  */
-async function deleteMemo(rowIndex) {
+async function deleteMemo(memoId) {
   const spreadsheetId = getSpreadsheetId();
   return callWebapp({
     action: 'delete',
     spreadsheetId: spreadsheetId,
-    data: { rowIndex: rowIndex }
+    data: { memoId: memoId }
   });
 }
 
