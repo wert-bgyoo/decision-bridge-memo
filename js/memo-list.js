@@ -216,7 +216,7 @@ async function saveEdit(idx) {
   }
 
   try {
-    await updateMemo(memo._rowIndex, updatedData);
+    await updateMemo(memo['memo_id'], updatedData);
     hasChanges = true;
     await loadMemos();
   } catch (e) {
@@ -238,7 +238,7 @@ async function confirmDelete(idx) {
   if (!ok) return;
 
   try {
-    await deleteMemo(memo._rowIndex);
+    await deleteMemo(memo['memo_id']);
     hasChanges = true;
     await loadMemos();
   } catch (e) {
